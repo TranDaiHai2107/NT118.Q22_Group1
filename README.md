@@ -21,9 +21,7 @@
 -    **Mô tả:** Xây dựng ứng dụng giúp bệnh nhân có thể dễ dàng tìm hiểu và lựa chọn bác sĩ phù hợp với tình trạng bệnh của bản thân
 
 ## CHỨC NĂNG CHÍNH
-Dưới đây là mã nguồn Markdown hoàn chỉnh cho file README.md. Bạn chỉ cần nhấn vào nút Copy code ở góc trên cùng bên phải của khối mã dưới đây và dán thẳng vào file của bạn trên GitHub nhé:
 
-Markdown
 # 🏥 Hệ thống Đặt lịch Khám bệnh & Quản lý Y tế Tích hợp AI
 
 Nền tảng ứng dụng thông minh giúp kết nối người dùng với các cơ sở y tế, bệnh viện và phòng khám. Dự án cung cấp giải pháp toàn diện từ việc tìm kiếm, đặt lịch, thanh toán trực tuyến đến quản lý hồ sơ y tế cá nhân, mang lại trải nghiệm tiện lợi và minh bạch cho cả bệnh nhân lẫn cơ sở y tế.
