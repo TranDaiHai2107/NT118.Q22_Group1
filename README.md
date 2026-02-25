@@ -109,6 +109,6 @@ Nền tảng ứng dụng thông minh giúp kết nối người dùng với cá
 
 | STT | MSSV     | Họ và Tên            | GitHub                              | Email                   |
 | :-- | :------- | :------------------- | :---------------------------------- | :---------------------- |
-| 1   | 23520003 | Trần Đại Hải         | https://github.com/TranDaiHai2107   | 23520420@gm.uit.edu.vn  |
-| 2   | 23520022 | Mai Nguyễn Bảo Duy   | https://github.com/mduy2k5          | 23520369@gm.uit.edu.vn  |
-| 3   | 23520131 | Lê Nguyễn Thành Công | https://github.com/LibraJeager      | 23520191@gm.uit.edu.vn  |
+| 1   | 23520420 | Trần Đại Hải         | https://github.com/TranDaiHai2107   | 23520420@gm.uit.edu.vn  |
+| 2   | 23520369 | Mai Nguyễn Bảo Duy   | https://github.com/mduy2k5          | 23520369@gm.uit.edu.vn  |
+| 3   | 23520191 | Lê Nguyễn Thành Công | https://github.com/LibraJeager      | 23520191@gm.uit.edu.vn  |
