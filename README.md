@@ -97,11 +97,8 @@ Nền tảng ứng dụng thông minh giúp kết nối người dùng với cá
 ---
 
 ## 🚀 Công nghệ sử dụng (Tech Stack)
-* **Frontend:** React Native / Flutter (Mobile App), ReactJS / VueJS (Web Admin)
-* **Backend:** Node.js / Python / Java
-* **Database:** PostgreSQL / MongoDB, Redis
-* **AI/Search:** Elasticsearch, OpenAI API (cho AI Tìm kiếm sản phẩm)
-* **Khác:** Docker, AWS/GCP, Firebase (Push Noti)
+* **Mobile App:** Java (Android Studio)
+* **Database:** SQLite
 
 
 
