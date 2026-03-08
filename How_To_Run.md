@@ -1,6 +1,6 @@
 # AI-Powered Healthcare App
 
-Ứng dụng chăm sóc sức khỏe full-stack gồm **Android Native App** (Java) và **Spring Boot REST API** (Java), sử dụng **Oracle Database**.
+Ứng dụng chăm sóc sức khỏe **Android Native** (Java) sử dụng **Firebase** làm backend (Authentication, Cloud Firestore, Cloud Storage).
 
 ---
 
@@ -10,24 +10,29 @@
 2. [Cấu trúc dự án](#cấu-trúc-dự-án)
 3. [Yêu cầu cài đặt](#yêu-cầu-cài-đặt)
 4. [Hướng dẫn cài đặt & chạy](#hướng-dẫn-cài-đặt--chạy)
-5. [API Endpoints](#api-endpoints)
-6. [Tài khoản mặc định](#tài-khoản-mặc-định)
+5. [Firestore Collections](#firestore-collections)
+6. [Tài khoản test](#tài-khoản-test)
 7. [Màn hình ứng dụng](#màn-hình-ứng-dụng)
+8. [Tech Stack](#tech-stack)
+9. [Xử lý sự cố thường gặp](#xử-lý-sự-cố-thường-gặp)
 
 ---
 
 ## Tổng quan kiến trúc
 
 ```
-┌─────────────────┐       HTTP/REST        ┌──────────────────┐        JDBC         ┌─────────────────┐
-│                 │  ──────────────────►   │                  │  ─────────────────► │                 │
-│  Android App    │    JSON (Retrofit)     │  Spring Boot API │    JPA/Hibernate    │  Oracle DB XE   │
-│  (Java + XML)   │  ◄──────────────────   │  (Port 8080)     │  ◄───────────────── │  (Port 1521)    │
-│                 │                        │                  │                     │                 │
-└─────────────────┘                        └──────────────────┘                     └─────────────────┘
-     Emulator:                                  localhost                              Docker Container
-  10.0.2.2:8080                                                                     Service: XEPDB1
+┌─────────────────┐         Firebase SDK          ┌──────────────────────────┐
+│                 │  ──────────────────────────►  │                          │
+│  Android App    │    Firebase Authentication    │   Firebase Cloud         │
+│  (Java + XML)   │    Cloud Firestore            │   (Google Server)        │
+│                 │    Cloud Storage              │                          │
+│                 │  ◄──────────────────────────  │  • Authentication        │
+└─────────────────┘     Realtime Sync             │  • Firestore Database    │
+   Emulator hoặc                                  │  • Cloud Storage         │
+   Điện thoại thật                                └──────────────────────────┘
 ```
+
+> Không cần chạy backend server riêng. Firebase SDK trong app kết nối trực tiếp đến cloud.
 
 ---
 
@@ -36,66 +41,26 @@
 ```
 AI-Powered Healthcare App Design/
 │
-├── backend/                              ← Spring Boot REST API
-│   ├── pom.xml                           ← Maven dependencies (Spring Boot 3.2, Oracle JDBC)
-│   ├── mvnw.cmd                          ← Maven Wrapper (Windows)
-│   ├── setup-oracle.sql                  ← Script tạo user Oracle
-│   ├── .mvn/wrapper/
-│   │   └── maven-wrapper.properties
-│   └── src/main/
-│       ├── java/com/healthcare/api/
-│       │   ├── HealthcareApplication.java          ← Main entry point
-│       │   ├── config/
-│       │   │   └── CorsConfig.java                 ← CORS cho Android
-│       │   ├── controller/                          ← 9 REST Controllers
-│       │   │   ├── AuthController.java             ←   POST /auth/login, /auth/register
-│       │   │   ├── DoctorController.java           ←   GET /doctors, /doctors/{id}
-│       │   │   ├── HospitalController.java         ←   GET /hospitals, /hospitals/{id}
-│       │   │   ├── AppointmentController.java      ←   GET/POST /appointments
-│       │   │   ├── MedicalRecordController.java    ←   GET /medical-records
-│       │   │   ├── NotificationController.java     ←   GET/PUT /notifications
-│       │   │   ├── InsuranceController.java        ←   GET /insurance
-│       │   │   ├── PaymentController.java          ←   POST /payments
-│       │   │   └── ProfileController.java          ←   GET/PUT /profile
-│       │   ├── dto/                                 ← 5 Data Transfer Objects
-│       │   │   ├── ApiResponse.java
-│       │   │   ├── LoginRequest.java
-│       │   │   ├── RegisterRequest.java
-│       │   │   ├── BookingRequest.java
-│       │   │   └── PaymentRequest.java
-│       │   ├── model/                               ← 7 JPA Entity classes
-│       │   │   ├── User.java
-│       │   │   ├── Doctor.java
-│       │   │   ├── Hospital.java
-│       │   │   ├── Appointment.java
-│       │   │   ├── MedicalRecord.java
-│       │   │   ├── Notification.java
-│       │   │   └── Insurance.java
-│       │   ├── repository/                          ← 7 JPA Repository interfaces
-│       │   └── service/                             ← 7 Service classes
-│       └── resources/
-│           ├── application.properties               ← Oracle DB config, port 8080
-│           └── data.sql                             ← Seed data (Oracle MERGE INTO syntax)
-│
 ├── android/                              ← Android Native App
-│   ├── build.gradle                      ← Root build (AGP 8.2.2)
-│   ├── app/build.gradle                  ← App build (compileSdk 34, Java 17)
+│   ├── build.gradle                      ← Root build (AGP 8.2.2, Google Services plugin)
+│   ├── app/build.gradle                  ← App build (compileSdk 34, Java 17, Firebase BOM)
+│   ├── app/google-services.json          ← Firebase config (TẢI TỪ FIREBASE CONSOLE)
 │   ├── settings.gradle                   ← Project: HealthcareApp
 │   ├── gradle.properties                 ← JVM args, AndroidX
-│   ├── local.properties                  ← Android SDK path (tự sinh)
+│   ├── local.properties                  ← Android SDK path (tự sinh bởi Android Studio)
 │   ├── gradlew.bat                       ← Gradle Wrapper (Windows)
 │   ├── gradlew                           ← Gradle Wrapper (Linux/Mac)
 │   ├── gradle/wrapper/
 │   │   ├── gradle-wrapper.jar
 │   │   └── gradle-wrapper.properties     ← Gradle 8.5
 │   └── app/src/main/
-│       ├── AndroidManifest.xml            ← 18 Activities, permissions
+│       ├── AndroidManifest.xml            ← 18 Activities, INTERNET permission
 │       ├── java/com/healthcare/app/
 │       │   ├── activity/                  ← 18 Activity classes
 │       │   │   ├── OnboardingActivity.java        ← Màn hình giới thiệu (LAUNCHER)
-│       │   │   ├── LoginActivity.java             ← Đăng nhập
-│       │   │   ├── RegisterActivity.java          ← Đăng ký
-│       │   │   ├── ForgotPasswordActivity.java    ← Quên mật khẩu
+│       │   │   ├── LoginActivity.java             ← Đăng nhập (Firebase Auth)
+│       │   │   ├── RegisterActivity.java          ← Đăng ký (Firebase Auth)
+│       │   │   ├── ForgotPasswordActivity.java    ← Quên mật khẩu (Firebase Auth)
 │       │   │   ├── ResetPasswordActivity.java     ← Đặt lại mật khẩu
 │       │   │   ├── HomeActivity.java              ← Trang chủ
 │       │   │   ├── SearchActivity.java            ← Tìm kiếm bác sĩ/bệnh viện
@@ -116,11 +81,7 @@ AI-Powered Healthcare App Design/
 │       │   │   ├── AppointmentAdapter.java
 │       │   │   ├── RecordAdapter.java
 │       │   │   └── NotificationAdapter.java
-│       │   ├── api/                       ← Retrofit HTTP Client
-│       │   │   ├── ApiClient.java         ← BASE_URL = http://10.0.2.2:8080/api/
-│       │   │   └── ApiService.java        ← Định nghĩa tất cả API calls
-│       │   └── model/                     ← 8 POJO Model classes
-│       │       ├── ApiResponse.java
+│       │   └── model/                     ← 7 Firestore Model classes
 │       │       ├── User.java
 │       │       ├── Doctor.java
 │       │       ├── Hospital.java
@@ -133,13 +94,19 @@ AI-Powered Healthcare App Design/
 │           ├── drawable/                  ← 33 drawable XMLs (gradients, shapes, icons)
 │           ├── menu/
 │           │   └── bottom_nav_menu.xml    ← Bottom Navigation (5 tabs)
-│           ├── mipmap-*/                  ← App launcher icons (adaptive)
+│           ├── mipmap-*/                  ← App launcher icons
 │           └── values/
 │               ├── colors.xml             ← Bảng màu pastel
 │               ├── themes.xml             ← Material Design 3 theme
-│               └── strings.xml            ← Tất cả strings
+│               └── strings.xml
 │
-└── README.md                              ← File này
+├── firebase-seed/                        ← Tool seed data vào Firestore
+│   ├── seed-data.html                    ← Mở bằng trình duyệt để seed data (KHÔNG CẦN cài Node.js)
+│   ├── seed-firestore.js                 ← Script Node.js (tùy chọn, cần cài Node.js)
+│   └── package.json                      ← Dependencies cho script Node.js
+│
+├── How_To_Run.md                         ← File này
+└── README.md
 ```
 
 ---
@@ -150,168 +117,166 @@ AI-Powered Healthcare App Design/
 
 | # | Phần mềm | Phiên bản | Mục đích | Link tải |
 |---|----------|-----------|----------|----------|
-| 1 | **Java JDK** | 17+ | Chạy backend + build Android | [Adoptium](https://adoptium.net/) |
-| 2 | **Docker Desktop** | Latest | Chạy Oracle Database | [Docker](https://www.docker.com/products/docker-desktop/) |
-| 3 | **Maven** | 3.9+ | Build backend Spring Boot | [Maven](https://maven.apache.org/download.cgi) |
-| 4 | **Android Studio** | Latest | Build + chạy app Android | [Android Studio](https://developer.android.com/studio) |
+| 1 | **Java JDK** | 17+ | Build Android app | [Adoptium](https://adoptium.net/) |
+| 2 | **Android Studio** | Latest | Build + chạy app Android | [Android Studio](https://developer.android.com/studio) |
+| 3 | **Trình duyệt web** | Chrome/Edge/Firefox | Seed data vào Firestore | Đã có sẵn |
+
+> **Không cần** cài Docker, Oracle, MySQL, Maven, hoặc bất kỳ backend server nào. Firebase chạy trên cloud.
 
 ### Kiểm tra đã cài đặt
 
 ```bash
 java -version          # Java 17+
-mvn -version           # Maven 3.9+  (hoặc dùng mvnw.cmd trong backend/)
-docker --version       # Docker Desktop
 ```
 
 ---
 
 ## Hướng dẫn cài đặt & chạy
 
-### Thứ tự thực hiện
+### Tổng quan các bước
 
 ```
-Bước 1: Oracle DB  →  Bước 2: Backend API  →  Bước 3: Android App
-   (Docker)              (Spring Boot)           (Android Studio)
+Bước 1: Tạo Firebase Project
+       ↓
+Bước 2: Tải google-services.json
+       ↓
+Bước 3: Cấu hình Firestore Rules
+       ↓
+Bước 4: Tạo tài khoản user trong Firebase Auth
+       ↓
+Bước 5: Seed data vào Firestore
+       ↓
+Bước 6: Mở Android Studio & chạy app
 ```
 
 ---
 
-### Bước 1: Khởi động Oracle Database (Docker)
+### Bước 1: Tạo Firebase Project
 
-**1.1. Pull và chạy Oracle XE container:**
+1. Truy cập [Firebase Console](https://console.firebase.google.com/)
+2. Đăng nhập bằng tài khoản Google
+3. Nhấn **"Create a project"** (hoặc "Add project")
+4. Đặt tên project, ví dụ: `healthcare-app`
+5. Tắt Google Analytics (không bắt buộc) → **Create Project**
+6. Đợi tạo xong → nhấn **Continue**
 
-```bash
-docker run -d --name oracle-xe \
-  -p 1521:1521 \
-  -e ORACLE_PASSWORD=Oracle123 \
-  container-registry.oracle.com/database/express:21.3.0-xe
-```
+#### 1a. Bật Authentication
 
-> Lần đầu chạy mất khoảng 5-10 phút để khởi tạo database.
+7. Trong Firebase Console, menu bên trái chọn **Build → Authentication**
+8. Nhấn **Get started**
+9. Tab **Sign-in method** → nhấn vào **Email/Password**
+10. Bật **Enable** → nhấn **Save**
 
-**1.2. Kiểm tra Oracle đã sẵn sàng:**
+#### 1b. Tạo Firestore Database
 
-```bash
-docker logs oracle-xe --tail 20
-```
-
-Đợi đến khi thấy: `DATABASE IS READY TO USE!`
-
-**1.3. Tạo user `healthcare` trong Oracle:**
-
-```bash
-docker exec -i oracle-xe sqlplus system/Oracle123@//localhost:1521/XEPDB1 < backend/setup-oracle.sql
-```
-
-Hoặc chạy thủ công:
-
-```bash
-docker exec -it oracle-xe sqlplus system/Oracle123@//localhost:1521/XEPDB1
-```
-
-Rồi paste nội dung file `backend/setup-oracle.sql`:
-
-```sql
-ALTER SESSION SET "_ORACLE_SCRIPT"=true;
-
-CREATE USER healthcare IDENTIFIED BY healthcare123
-DEFAULT TABLESPACE USERS
-TEMPORARY TABLESPACE TEMP
-QUOTA UNLIMITED ON USERS;
-
-GRANT CONNECT, RESOURCE TO healthcare;
-GRANT CREATE SESSION TO healthcare;
-GRANT CREATE TABLE TO healthcare;
-GRANT CREATE SEQUENCE TO healthcare;
-GRANT CREATE VIEW TO healthcare;
-
-EXIT;
-```
-
-**1.4. Xác nhận kết nối:**
-
-```bash
-docker exec -it oracle-xe sqlplus healthcare/healthcare123@//localhost:1521/XEPDB1
-```
-
-Nếu vào được SQL> prompt → thành công.
+11. Menu bên trái chọn **Build → Firestore Database**
+12. Nhấn **Create database**
+13. Chọn location gần bạn (ví dụ: `asia-southeast1` cho Việt Nam)
+14. Chọn **Start in test mode** → nhấn **Create**
 
 ---
 
-### Bước 2: Chạy Backend Spring Boot
+### Bước 2: Tải google-services.json
 
-**2.1. Mở terminal, di chuyển vào thư mục backend:**
+1. Trong Firebase Console, nhấn **⚙ Settings** (bánh răng) → **Project settings**
+2. Kéo xuống phần **"Your apps"** → nhấn icon **Android** (</>) để thêm app
+3. Nhập **Android package name**: `com.healthcare.app`
+4. Nhấn **Register app**
+5. Nhấn **Download google-services.json**
+6. **Copy file vừa tải vào thư mục** `android/app/` (thay thế file cũ nếu có)
+7. Nhấn **Next** → **Next** → **Continue to console**
 
-```bash
-cd "c:\Users\ASUS\Downloads\AI-Powered Healthcare App Design\backend"
-```
-
-**2.2. Chạy Spring Boot:**
-
-Nếu đã cài Maven global:
-```bash
-mvn spring-boot:run
-```
-
-Hoặc dùng Maven Wrapper (không cần cài Maven):
-```bash
-mvnw.cmd spring-boot:run
-```
-
-> Lần đầu chạy Maven sẽ tải dependencies (~50MB), mất khoảng 2-3 phút.
-
-**2.3. Xác nhận backend chạy thành công:**
-
-Khi thấy log:
-```
-Started HealthcareApplication in X seconds
-```
-
-Mở trình duyệt, truy cập:
-```
-http://localhost:8080/api/doctors
-```
-
-Nếu thấy JSON trả về danh sách bác sĩ → Backend OK.
-
-**2.4. Cấu hình Oracle (nếu cần thay đổi):**
-
-File: `backend/src/main/resources/application.properties`
-
-```properties
-spring.datasource.url=jdbc:oracle:thin:@//localhost:1521/XEPDB1
-spring.datasource.username=healthcare
-spring.datasource.password=healthcare123
-```
-
-> **Lưu ý:** Giữ backend terminal mở, KHÔNG tắt khi chạy app Android.
+> **QUAN TRỌNG:** File `google-services.json` phải nằm đúng tại `android/app/google-services.json`
 
 ---
 
-### Bước 3: Chạy Android App
+### Bước 3: Cấu hình Firestore Rules
 
-**3.1. Mở Android Studio**
+1. Trong Firebase Console → **Firestore Database** → tab **Rules**
+2. Thay toàn bộ nội dung bằng:
 
-**3.2. Import project:**
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
 
-- Chọn **File → Open**
-- Trỏ đến thư mục:
-  ```
-  c:\Users\ASUS\Downloads\AI-Powered Healthcare App Design\android
-  ```
-- Click **OK**
-- Đợi **Gradle Sync** hoàn tất (lần đầu 2-5 phút, tải dependencies)
+3. Nhấn **Publish**
 
-**3.3. Tạo Android Emulator (nếu chưa có):**
+> Lưu ý: Rules này cho phép đọc/ghi tự do, chỉ phù hợp cho development/testing.
+
+---
+
+### Bước 4: Tạo tài khoản user trong Firebase Auth
+
+1. Trong Firebase Console → **Authentication** → tab **Users**
+2. Nhấn **Add user**
+3. Nhập:
+   - **Email**: `sarah.williams@email.com` (hoặc email bất kỳ)
+   - **Password**: `password123` (hoặc password bất kỳ, tối thiểu 6 ký tự)
+4. Nhấn **Add user**
+5. **Ghi lại User UID** hiển thị trong bảng (chuỗi ký tự dài, ví dụ: `VixcTILbf3bqBShZu16nKQRplUf1`)
+
+> UID này sẽ dùng ở Bước 5 để gắn data cho đúng user.
+
+---
+
+### Bước 5: Seed data vào Firestore
+
+#### Cách 1: Dùng file HTML (Khuyến nghị - Không cần cài thêm gì)
+
+1. Mở file `firebase-seed/seed-data.html` bằng **text editor** (Notepad, VS Code...)
+2. Tìm dòng chứa `const firebaseConfig = {` và cập nhật thông tin từ Firebase Console:
+   - Vào **⚙ Project Settings → General → Your apps** → copy config
+   - Thay các giá trị `apiKey`, `authDomain`, `projectId`, `storageBucket`, `messagingSenderId`, `appId`
+3. Tìm dòng `const USER_UID = "..."` và thay bằng **UID thật** từ Bước 4
+4. Lưu file
+5. Mở file `seed-data.html` bằng **trình duyệt** (double-click hoặc kéo vào Chrome)
+6. Nhấn nút **"Seed All Data"**
+7. Đợi đến khi log hiện: `✅ ALL DATA SEEDED SUCCESSFULLY!`
+8. Kiểm tra: vào **Firebase Console → Firestore Database → Data** → phải thấy các collection: `hospitals`, `doctors`, `users`, `appointments`, `medical_records`, `notifications`, `insurance`
+
+#### Cách 2: Dùng Node.js (Tùy chọn - Cần cài Node.js)
+
+1. Cài [Node.js](https://nodejs.org/) (LTS)
+2. Trong Firebase Console → **⚙ Settings → Service accounts** → **Generate new private key** → tải file JSON
+3. Đổi tên thành `serviceAccountKey.json` và đặt vào thư mục `firebase-seed/`
+4. Mở file `firebase-seed/seed-firestore.js`, tìm `REPLACE_WITH_ACTUAL_UID` và thay bằng UID từ Bước 4
+5. Mở terminal:
+
+```bash
+cd firebase-seed
+npm install
+node seed-firestore.js
+```
+
+---
+
+### Bước 6: Mở Android Studio & chạy app
+
+**6.1. Import project:**
+
+1. Mở **Android Studio**
+2. Chọn **File → Open**
+3. Trỏ đến thư mục `android/` của project
+4. Nhấn **OK**
+5. Đợi **Gradle Sync** hoàn tất (lần đầu 2-5 phút để tải dependencies)
+
+**6.2. Tạo Android Emulator (nếu chưa có):**
 
 1. Vào **Tools → Device Manager**
-2. Click **Create Virtual Device**
+2. Nhấn **Create Virtual Device**
 3. Chọn thiết bị: **Pixel 6** → **Next**
 4. Chọn system image: **API 34 (Android 14 "UpsideDownCake")**
    - Nếu chưa tải → click **Download** → đợi xong → **Next**
-5. **Finish**
+5. Nhấn **Finish**
 
-**3.4. Chạy app:**
+**6.3. Chạy app:**
 
 1. Trên toolbar, chọn **emulator** vừa tạo ở dropdown thiết bị
 2. Đảm bảo module **app** được chọn
@@ -319,53 +284,83 @@ spring.datasource.password=healthcare123
 4. Đợi build + cài lên emulator (lần đầu 1-3 phút)
 5. App sẽ tự mở trên emulator
 
-**3.5. Cấu hình kết nối (nếu cần):**
+**6.4. Đăng nhập:**
 
-File: `android/app/src/main/java/com/healthcare/app/api/ApiClient.java`
+- Dùng **email** và **password** đã tạo ở Bước 4
 
-```java
-// Emulator → dùng 10.0.2.2 (đã cấu hình sẵn)
-private static final String BASE_URL = "http://10.0.2.2:8080/api/";
+---
 
-// Điện thoại thật → đổi sang IP máy tính (ví dụ)
-// private static final String BASE_URL = "http://192.168.1.100:8080/api/";
+## Firestore Collections
+
+Sau khi seed data, Firestore sẽ có các collection sau:
+
+| Collection | Mô tả | Số documents |
+|------------|--------|--------------|
+| `hospitals` | Danh sách bệnh viện | 4 |
+| `doctors` | Danh sách bác sĩ | 5 |
+| `users` | Thông tin user profile | 1 |
+| `appointments` | Lịch hẹn khám bệnh | 4 |
+| `medical_records` | Hồ sơ y tế | 4 |
+| `notifications` | Thông báo | 5 |
+| `insurance` | Bảo hiểm y tế | 1 |
+
+### Cấu trúc document mẫu
+
+**hospitals/{id}**
+```json
+{
+  "name": "City Heart Hospital",
+  "image": "https://...",
+  "rating": 4.8,
+  "reviewCount": 450,
+  "specialties": "Cardiology,Emergency,Surgery",
+  "distance": "1.2 km",
+  "priceRange": "$$$",
+  "address": "123 Medical Plaza, Downtown",
+  "phone": "+1 (555) 123-4567",
+  "operatingHours": "24/7"
+}
+```
+
+**doctors/{id}**
+```json
+{
+  "name": "Dr. Sarah Johnson",
+  "specialization": "Cardiologist",
+  "hospitalId": "hospital_1",
+  "hospitalName": "City Heart Hospital",
+  "rating": 4.9,
+  "experience": 12,
+  "consultationFee": 150,
+  "image": "https://...",
+  "nextAvailable": "Today, 3:00 PM",
+  "availableSlots": "09:00 AM,10:00 AM,11:00 AM,02:00 PM,03:00 PM,04:00 PM"
+}
+```
+
+**appointments/{auto-id}**
+```json
+{
+  "userId": "<USER_UID>",
+  "doctorId": "doctor_1",
+  "doctorName": "Dr. Sarah Johnson",
+  "doctorSpecialization": "Cardiologist",
+  "hospital": "City Heart Hospital",
+  "date": "2026-03-08",
+  "time": "03:00 PM",
+  "status": "upcoming",
+  "type": "Specialist Consultation"
+}
 ```
 
 ---
 
-## API Endpoints
-
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
-| `POST` | `/api/auth/login` | Đăng nhập |
-| `POST` | `/api/auth/register` | Đăng ký tài khoản |
-| `GET` | `/api/doctors` | Danh sách bác sĩ |
-| `GET` | `/api/doctors/{id}` | Chi tiết bác sĩ |
-| `GET` | `/api/doctors/search?query=` | Tìm kiếm bác sĩ |
-| `GET` | `/api/hospitals` | Danh sách bệnh viện |
-| `GET` | `/api/hospitals/{id}` | Chi tiết bệnh viện |
-| `GET` | `/api/hospitals/search?query=` | Tìm kiếm bệnh viện |
-| `GET` | `/api/appointments/user/{userId}` | Lịch hẹn của user |
-| `POST` | `/api/appointments` | Tạo lịch hẹn mới |
-| `PUT` | `/api/appointments/{id}/cancel` | Hủy lịch hẹn |
-| `PUT` | `/api/appointments/{id}/checkin` | Check-in lịch hẹn |
-| `GET` | `/api/medical-records/user/{userId}` | Hồ sơ y tế |
-| `GET` | `/api/notifications/user/{userId}` | Thông báo |
-| `PUT` | `/api/notifications/{id}/read` | Đánh dấu đã đọc |
-| `GET` | `/api/insurance/user/{userId}` | Thông tin bảo hiểm |
-| `GET` | `/api/profile/{userId}` | Hồ sơ cá nhân |
-| `PUT` | `/api/profile/{userId}` | Cập nhật hồ sơ |
-| `POST` | `/api/payments/process` | Xử lý thanh toán |
-
----
-
-## Tài khoản mặc định
+## Tài khoản test
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Email** | `sarah.williams@email.com` |
-| **Password** | `password123` |
-| **Patient ID** | `PT-123456` |
+| **Email** | Email bạn tạo ở Bước 4 (ví dụ: `sarah.williams@email.com`) |
+| **Password** | Password bạn tạo ở Bước 4 (ví dụ: `password123`) |
 
 ---
 
@@ -374,9 +369,9 @@ private static final String BASE_URL = "http://10.0.2.2:8080/api/";
 | # | Màn hình | Activity | Mô tả |
 |---|----------|----------|-------|
 | 1 | Onboarding | `OnboardingActivity` | 3 slide giới thiệu app |
-| 2 | Login | `LoginActivity` | Đăng nhập email/password |
+| 2 | Login | `LoginActivity` | Đăng nhập bằng Firebase Auth |
 | 3 | Register | `RegisterActivity` | Đăng ký tài khoản mới |
-| 4 | Forgot Password | `ForgotPasswordActivity` | Nhập email khôi phục |
+| 4 | Forgot Password | `ForgotPasswordActivity` | Gửi email reset password |
 | 5 | Reset Password | `ResetPasswordActivity` | Đặt mật khẩu mới |
 | 6 | Home | `HomeActivity` | Trang chủ: quick actions, bác sĩ, bệnh viện |
 | 7 | Search | `SearchActivity` | Tìm kiếm bác sĩ & bệnh viện |
@@ -398,10 +393,11 @@ private static final String BASE_URL = "http://10.0.2.2:8080/api/";
 
 | Layer | Công nghệ |
 |-------|-----------|
-| **Android Frontend** | Java 17, Android SDK 34, Material Design 3, ViewBinding, Retrofit 2, Glide 4, ZXing |
-| **Backend API** | Java 17, Spring Boot 3.2.3, Spring Data JPA, Hibernate 6 |
-| **Database** | Oracle Database XE 21c (Docker) |
-| **Build Tools** | Gradle 8.5 (Android), Maven 3.9+ (Backend) |
+| **Android Frontend** | Java 17, Android SDK 34, Material Design 3, ViewBinding, Glide 4, ZXing |
+| **Authentication** | Firebase Authentication (Email/Password) |
+| **Database** | Cloud Firestore (NoSQL, realtime sync) |
+| **Storage** | Firebase Cloud Storage |
+| **Build Tool** | Gradle 8.5, Android Gradle Plugin 8.2.2 |
 
 ---
 
@@ -410,8 +406,11 @@ private static final String BASE_URL = "http://10.0.2.2:8080/api/";
 | Vấn đề | Giải pháp |
 |--------|-----------|
 | Gradle sync lỗi SDK | Android Studio sẽ hiện link **Install missing SDK** → click để cài tự động |
-| App không kết nối được backend | Đảm bảo backend đang chạy trên port 8080 trước khi mở app |
-| `10.0.2.2` không hoạt động | Chỉ dùng cho **Android Emulator**. Điện thoại thật → đổi sang IP LAN |
-| Oracle connection refused | Kiểm tra Docker container đang chạy: `docker ps` |
-| `mvn` not recognized | Dùng `mvnw.cmd` thay vì `mvn`, hoặc cài Maven global |
-| Backend lỗi `ORA-01017` | Kiểm tra user/password Oracle: `healthcare` / `healthcare123` |
+| `google-services.json` not found | Đảm bảo file nằm đúng tại `android/app/google-services.json` |
+| App crash khi đăng nhập | Kiểm tra đã bật **Email/Password** trong Firebase Auth → Sign-in method |
+| Không thấy data trong app | Kiểm tra đã seed data (Bước 5) và UID trong seed data khớp với user đã tạo |
+| `PERMISSION_DENIED` từ Firestore | Kiểm tra Firestore Rules đã đổi thành `allow read, write: if true` (Bước 3) |
+| App hiện "No doctors found" | Vào Firebase Console → Firestore → kiểm tra collection `doctors` có data không |
+| Build lỗi `JAVA_HOME` | Đảm bảo biến môi trường `JAVA_HOME` trỏ đến JDK 17+ |
+| Emulator chạy chậm | Bật **Hardware acceleration** trong BIOS (Intel HAXM hoặc AMD Hypervisor) |
+| Seed data lỗi trên trình duyệt | Mở Developer Console (F12) để xem chi tiết lỗi. Kiểm tra lại Firebase config trong file HTML |
