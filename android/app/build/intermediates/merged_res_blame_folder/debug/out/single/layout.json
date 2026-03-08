@@ -1,0 +1,98 @@
+[
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_reset_password.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_reset_password.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_payment.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_payment.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_hospital_detail.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_hospital_detail.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_doctor_detail.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_doctor_detail.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_booking.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_booking.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_home.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_home.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/item_hospital.xml",
+        "source": "com.healthcare.app-main-44:/layout/item_hospital.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_insurance.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_insurance.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/item_record.xml",
+        "source": "com.healthcare.app-main-44:/layout/item_record.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_search.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_search.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_register.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_register.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_profile.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_profile.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/item_notification.xml",
+        "source": "com.healthcare.app-main-44:/layout/item_notification.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/item_appointment.xml",
+        "source": "com.healthcare.app-main-44:/layout/item_appointment.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_login.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/item_onboarding_slide.xml",
+        "source": "com.healthcare.app-main-44:/layout/item_onboarding_slide.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_appointments.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_appointments.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_confirmation.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_confirmation.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/item_doctor.xml",
+        "source": "com.healthcare.app-main-44:/layout/item_doctor.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_medical_records.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_medical_records.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_forgot_password.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_forgot_password.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_onboarding.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_onboarding.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_notifications.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_notifications.xml"
+    },
+    {
+        "merged": "com.healthcare.app-mergeDebugResources-41:/layout/activity_checkin.xml",
+        "source": "com.healthcare.app-main-44:/layout/activity_checkin.xml"
+    }
+]
