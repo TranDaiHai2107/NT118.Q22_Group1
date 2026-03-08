@@ -9,12 +9,13 @@
 1. [Tổng quan kiến trúc](#tổng-quan-kiến-trúc)
 2. [Cấu trúc dự án](#cấu-trúc-dự-án)
 3. [Yêu cầu cài đặt](#yêu-cầu-cài-đặt)
-4. [Hướng dẫn cài đặt & chạy](#hướng-dẫn-cài-đặt--chạy)
-5. [Firestore Collections](#firestore-collections)
-6. [Tài khoản test](#tài-khoản-test)
-7. [Màn hình ứng dụng](#màn-hình-ứng-dụng)
-8. [Tech Stack](#tech-stack)
-9. [Xử lý sự cố thường gặp](#xử-lý-sự-cố-thường-gặp)
+4. [Hướng dẫn cài đặt & chạy](#hướng-dẫn-cài-đặt--chạy) (chỉ 2 bước cho đồng nghiệp)
+5. [Dành cho người quản lý project](#dành-cho-người-quản-lý-project-setup-firebase-từ-đầu) (setup Firebase từ đầu)
+6. [Firestore Collections](#firestore-collections)
+7. [Tài khoản test](#tài-khoản-test)
+8. [Màn hình ứng dụng](#màn-hình-ứng-dụng)
+9. [Tech Stack](#tech-stack)
+10. [Xử lý sự cố thường gặp](#xử-lý-sự-cố-thường-gặp)
 
 ---
 
@@ -133,25 +134,72 @@ java -version          # Java 17+
 
 ## Hướng dẫn cài đặt & chạy
 
+> **Firebase project đã được tạo sẵn.** Database và tài khoản test đã có data.
+> Đồng nghiệp chỉ cần nhận file `google-services.json` và làm theo 2 bước dưới đây.
+
 ### Tổng quan các bước
 
 ```
-Bước 1: Tạo Firebase Project
+Bước 1: Nhận file google-services.json → bỏ vào android/app/
        ↓
-Bước 2: Tải google-services.json
-       ↓
-Bước 3: Cấu hình Firestore Rules
-       ↓
-Bước 4: Tạo tài khoản user trong Firebase Auth
-       ↓
-Bước 5: Seed data vào Firestore
-       ↓
-Bước 6: Mở Android Studio & chạy app
+Bước 2: Mở Android Studio & chạy app
 ```
 
 ---
 
-### Bước 1: Tạo Firebase Project
+### Bước 1: Nhận file google-services.json
+
+File `google-services.json` chứa thông tin kết nối đến Firebase project chung của nhóm.
+
+1. Nhận file `google-services.json` từ người quản lý project (đã có sẵn trong repo)
+2. Đảm bảo file nằm đúng tại: `android/app/google-services.json`
+
+> **QUAN TRỌNG:** File này đã được cung cấp sẵn trong project. Nếu bạn clone repo về thì đã có, không cần tải lại.
+
+---
+
+### Bước 2: Mở Android Studio & chạy app
+
+**2.1. Import project:**
+
+1. Mở **Android Studio**
+2. Chọn **File → Open**
+3. Trỏ đến thư mục `android/` của project
+4. Nhấn **OK**
+5. Đợi **Gradle Sync** hoàn tất (lần đầu 2-5 phút để tải dependencies)
+
+**2.2. Tạo Android Emulator (nếu chưa có):**
+
+1. Vào **Tools → Device Manager**
+2. Nhấn **Create Virtual Device**
+3. Chọn thiết bị: **Pixel 6** → **Next**
+4. Chọn system image: **API 34 (Android 14 "UpsideDownCake")**
+   - Nếu chưa tải → click **Download** → đợi xong → **Next**
+5. Nhấn **Finish**
+
+**2.3. Chạy app:**
+
+1. Trên toolbar, chọn **emulator** vừa tạo ở dropdown thiết bị
+2. Đảm bảo module **app** được chọn
+3. Nhấn **Run ▶** (nút tam giác xanh) hoặc **Shift + F10**
+4. Đợi build + cài lên emulator (lần đầu 1-3 phút)
+5. App sẽ tự mở trên emulator
+
+**2.4. Đăng nhập:**
+
+- **Email:** `sarah.williams@email.com`
+- **Password:** `password123`
+
+---
+
+## Dành cho người quản lý project (Setup Firebase từ đầu)
+
+> Phần này chỉ cần làm **1 lần** bởi người tạo project. Đồng nghiệp **không cần** đọc phần này.
+
+<details>
+<summary><b>Click để mở hướng dẫn tạo Firebase project mới</b></summary>
+
+### A. Tạo Firebase Project
 
 1. Truy cập [Firebase Console](https://console.firebase.google.com/)
 2. Đăng nhập bằng tài khoản Google
@@ -160,39 +208,23 @@ Bước 6: Mở Android Studio & chạy app
 5. Tắt Google Analytics (không bắt buộc) → **Create Project**
 6. Đợi tạo xong → nhấn **Continue**
 
-#### 1a. Bật Authentication
+### B. Bật Authentication
 
-7. Trong Firebase Console, menu bên trái chọn **Build → Authentication**
-8. Nhấn **Get started**
-9. Tab **Sign-in method** → nhấn vào **Email/Password**
-10. Bật **Enable** → nhấn **Save**
+1. Menu bên trái chọn **Build → Authentication**
+2. Nhấn **Get started**
+3. Tab **Sign-in method** → nhấn vào **Email/Password**
+4. Bật **Enable** → nhấn **Save**
 
-#### 1b. Tạo Firestore Database
+### C. Tạo Firestore Database
 
-11. Menu bên trái chọn **Build → Firestore Database**
-12. Nhấn **Create database**
-13. Chọn location gần bạn (ví dụ: `asia-southeast1` cho Việt Nam)
-14. Chọn **Start in test mode** → nhấn **Create**
+1. Menu bên trái chọn **Build → Firestore Database**
+2. Nhấn **Create database**
+3. Chọn location gần bạn (ví dụ: `asia-southeast1` cho Việt Nam)
+4. Chọn **Start in test mode** → nhấn **Create**
 
----
+### D. Cấu hình Firestore Rules
 
-### Bước 2: Tải google-services.json
-
-1. Trong Firebase Console, nhấn **⚙ Settings** (bánh răng) → **Project settings**
-2. Kéo xuống phần **"Your apps"** → nhấn icon **Android** (</>) để thêm app
-3. Nhập **Android package name**: `com.healthcare.app`
-4. Nhấn **Register app**
-5. Nhấn **Download google-services.json**
-6. **Copy file vừa tải vào thư mục** `android/app/` (thay thế file cũ nếu có)
-7. Nhấn **Next** → **Next** → **Continue to console**
-
-> **QUAN TRỌNG:** File `google-services.json` phải nằm đúng tại `android/app/google-services.json`
-
----
-
-### Bước 3: Cấu hình Firestore Rules
-
-1. Trong Firebase Console → **Firestore Database** → tab **Rules**
+1. Trong Firestore Database → tab **Rules**
 2. Thay toàn bộ nội dung bằng:
 
 ```javascript
@@ -208,85 +240,37 @@ service cloud.firestore {
 
 3. Nhấn **Publish**
 
-> Lưu ý: Rules này cho phép đọc/ghi tự do, chỉ phù hợp cho development/testing.
+### E. Đăng ký Android App & tải google-services.json
 
----
+1. Nhấn **⚙ Settings** → **Project settings**
+2. Kéo xuống **"Your apps"** → nhấn icon **Android**
+3. Nhập **package name**: `com.healthcare.app`
+4. Nhấn **Register app** → **Download google-services.json**
+5. Copy file vào `android/app/google-services.json`
 
-### Bước 4: Tạo tài khoản user trong Firebase Auth
+### F. Tạo tài khoản user test
 
-1. Trong Firebase Console → **Authentication** → tab **Users**
-2. Nhấn **Add user**
-3. Nhập:
-   - **Email**: `sarah.williams@email.com` (hoặc email bất kỳ)
-   - **Password**: `password123` (hoặc password bất kỳ, tối thiểu 6 ký tự)
-4. Nhấn **Add user**
-5. **Ghi lại User UID** hiển thị trong bảng (chuỗi ký tự dài, ví dụ: `VixcTILbf3bqBShZu16nKQRplUf1`)
+1. Vào **Authentication** → tab **Users** → nhấn **Add user**
+2. Nhập email: `sarah.williams@email.com`, password: `password123`
+3. Nhấn **Add user** → ghi lại **User UID**
 
-> UID này sẽ dùng ở Bước 5 để gắn data cho đúng user.
+### G. Seed data vào Firestore
 
----
+1. Mở file `firebase-seed/seed-data.html` bằng text editor
+2. Cập nhật `const firebaseConfig = {…}` với config từ Firebase Console
+3. Cập nhật `const USER_UID = "..."` với UID từ bước F
+4. Lưu file → mở bằng trình duyệt → nhấn **"Seed All Data"**
+5. Đợi log hiện `✅ ALL DATA SEEDED SUCCESSFULLY!`
 
-### Bước 5: Seed data vào Firestore
+### H. Thêm đồng nghiệp vào project
 
-#### Cách 1: Dùng file HTML (Khuyến nghị - Không cần cài thêm gì)
+1. Vào **⚙ Settings → Users and permissions**
+2. Nhấn **Add member** → nhập email Google của đồng nghiệp
+3. Chọn role **Editor** → nhấn **Add**
 
-1. Mở file `firebase-seed/seed-data.html` bằng **text editor** (Notepad, VS Code...)
-2. Tìm dòng chứa `const firebaseConfig = {` và cập nhật thông tin từ Firebase Console:
-   - Vào **⚙ Project Settings → General → Your apps** → copy config
-   - Thay các giá trị `apiKey`, `authDomain`, `projectId`, `storageBucket`, `messagingSenderId`, `appId`
-3. Tìm dòng `const USER_UID = "..."` và thay bằng **UID thật** từ Bước 4
-4. Lưu file
-5. Mở file `seed-data.html` bằng **trình duyệt** (double-click hoặc kéo vào Chrome)
-6. Nhấn nút **"Seed All Data"**
-7. Đợi đến khi log hiện: `✅ ALL DATA SEEDED SUCCESSFULLY!`
-8. Kiểm tra: vào **Firebase Console → Firestore Database → Data** → phải thấy các collection: `hospitals`, `doctors`, `users`, `appointments`, `medical_records`, `notifications`, `insurance`
+> Sau khi hoàn tất, gửi file `google-services.json` cho đồng nghiệp. Họ chỉ cần làm theo Bước 1 & 2 ở trên.
 
-#### Cách 2: Dùng Node.js (Tùy chọn - Cần cài Node.js)
-
-1. Cài [Node.js](https://nodejs.org/) (LTS)
-2. Trong Firebase Console → **⚙ Settings → Service accounts** → **Generate new private key** → tải file JSON
-3. Đổi tên thành `serviceAccountKey.json` và đặt vào thư mục `firebase-seed/`
-4. Mở file `firebase-seed/seed-firestore.js`, tìm `REPLACE_WITH_ACTUAL_UID` và thay bằng UID từ Bước 4
-5. Mở terminal:
-
-```bash
-cd firebase-seed
-npm install
-node seed-firestore.js
-```
-
----
-
-### Bước 6: Mở Android Studio & chạy app
-
-**6.1. Import project:**
-
-1. Mở **Android Studio**
-2. Chọn **File → Open**
-3. Trỏ đến thư mục `android/` của project
-4. Nhấn **OK**
-5. Đợi **Gradle Sync** hoàn tất (lần đầu 2-5 phút để tải dependencies)
-
-**6.2. Tạo Android Emulator (nếu chưa có):**
-
-1. Vào **Tools → Device Manager**
-2. Nhấn **Create Virtual Device**
-3. Chọn thiết bị: **Pixel 6** → **Next**
-4. Chọn system image: **API 34 (Android 14 "UpsideDownCake")**
-   - Nếu chưa tải → click **Download** → đợi xong → **Next**
-5. Nhấn **Finish**
-
-**6.3. Chạy app:**
-
-1. Trên toolbar, chọn **emulator** vừa tạo ở dropdown thiết bị
-2. Đảm bảo module **app** được chọn
-3. Nhấn **Run ▶** (nút tam giác xanh) hoặc **Shift + F10**
-4. Đợi build + cài lên emulator (lần đầu 1-3 phút)
-5. App sẽ tự mở trên emulator
-
-**6.4. Đăng nhập:**
-
-- Dùng **email** và **password** đã tạo ở Bước 4
+</details>
 
 ---
 
@@ -359,8 +343,8 @@ Sau khi seed data, Firestore sẽ có các collection sau:
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Email** | Email bạn tạo ở Bước 4 (ví dụ: `sarah.williams@email.com`) |
-| **Password** | Password bạn tạo ở Bước 4 (ví dụ: `password123`) |
+| **Email** | `sarah.williams@email.com` |
+| **Password** | `password123` |
 
 ---
 
